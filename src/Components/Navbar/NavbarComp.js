@@ -50,9 +50,8 @@ const NavbarComp = () => {
                     <div style={{position:'relative',flexBasis:'100%',paddingRight:'20px'}}>
                     <Navbar.Collapse id="basic-navbar-nav">
                         <Nav className="ms-auto ps-4">
-                            <NavLink onClick={closeNavbar} className='nav-link text-center' to={'/'}>Home</NavLink>
+                            <NavLink onClick={closeNavbar} className='nav-link' to={'/'}>Home</NavLink>
                             <NavLink onClick={closeNavbar} className='nav-link' to={'/about'}>About</NavLink>
-                            {/* <NavLink className='nav-link' to={'#'}><AccordionMenu name={'About'} linkNames={['SIE', 'DOIE']} linkUrl={['/sie', '/doie']} /></NavLink> */}
                             <NavLink onClick={closeNavbar} className='nav-link' to={'/events'}>Events</NavLink>
                             <NavLink onClick={closeNavbar} className='nav-link' to={'/team'}>Team</NavLink>
                             <NavLink onClick={closeNavbar} className='nav-link' to={'/gallery'}>Gallery</NavLink>

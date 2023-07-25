@@ -65,7 +65,7 @@ function App() {
         <>
           <Routes>
             <Route path="/*" element={<NavFooterComp />} />
-            <Route path="/admin" element={<Admin />} />
+            <Route path="/admin/*" element={<Admin />} />
           </Routes>
           <ScrollTopBtn />
         </>}
