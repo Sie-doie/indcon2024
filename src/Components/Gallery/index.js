@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from 'react'
-import { images_url } from '../../assests/DataBase'
+import { gallery_id } from '../../assests/DataBase'
 import HeadingComp from '../Others/HeadingComp'
-import { Carousel, Modal } from 'react-bootstrap'
+import { Button, Carousel, Modal, OverlayTrigger, Tooltip } from 'react-bootstrap'
 import LoadSpinner from '../Loading/LoadSpinner'
 
 const Gallery = () => {
-  const numImages = 14
   const [loading, setloading] = useState(false);
   const [galleryShow, setGalleryShow] = useState(false)
   const [imgModal, setImgModal] = useState([])
@@ -16,13 +15,10 @@ const Gallery = () => {
   }, [])
 
 
-  const showImage = (num) => {
-    const temp = []
-    for (let index = -1; index < numImages - 1; index++) {
-      temp.push((num + index) % (numImages) + 1)
-    }
-    setImgModal(temp)
-    setGalleryShow(num)
+  const showImage = (imglist) => {
+    console.log(imglist)
+    setImgModal(imglist)
+    setGalleryShow(true)
   }
 
   async function setImgs() {
@@ -30,13 +26,14 @@ const Gallery = () => {
     const url =
       "https://corsproxy.io/?" +
       encodeURIComponent(
-        `https://drive.google.com/embeddedfolderview?id=${'13l6V9J2k4PdV6FNwjrpvSUZOEa5LCSPJ'}#list`,
+        `https://drive.google.com/embeddedfolderview?id=${gallery_id}#list`,
       );
     const html = await fetch(url).then((resp) => resp.text());
     const parent = document.createElement("div");
     parent.innerHTML = html;
     const folders = Array.from(parent.querySelectorAll(".flip-entry"));
-    folders.forEach(async (item, index) => {
+    for (var item of folders) {
+
       // const src = item.querySelector("a").getAttribute("href");
       // const img = item.querySelector("img");
       const gid = item.getAttribute("id").replace("entry-", "");
@@ -50,67 +47,74 @@ const Gallery = () => {
       await fetch(innerurl).then(resp => resp.text()).then(innerhtml => {
         const child = document.createElement("div");
         child.innerHTML = innerhtml;
-        if (child.querySelector(".flip-entry-list-icon img")) {
-          if (child.querySelector(".flip-entry-list-icon img").getAttribute("src").includes("type/image/jpeg")) { child.querySelectorAll(".flip-entry").forEach(item1 => result[name].push(item1.getAttribute("id").replace("entry-", ""))); }
-        }
-        return;
-      }
-      )
-      if (!result[name].length) { delete result[name] }
 
-      setListImg(result)
-      setloading(true)
-    })
+        child.querySelectorAll(".flip-entry").forEach(item1 => {
+          if (item1.querySelector(".flip-entry-list-icon img")) {
+            if (item1.querySelector(".flip-entry-list-icon img").getAttribute("src").includes("type/image/jpeg")) {
+              result[name].push(item1.getAttribute("id").replace("entry-", ""));
+            }
+          }
+        });
+        if (!result[name].length) { delete result[name] }
+      })
+    }
     console.log(result)
+    setListImg(result)
+    setloading(true)
   }
+
 
   return (
     <>
       {loading ? <div className="pb-5" data-aos="fade-up" data-aos-offset="200" data-aos-delay="200" data-aos-duration="500">
-        {/* <Modal size='xl' show={galleryShow} onHide={() => setGalleryShow(false)}>
-        <Modal.Header onClick={() => setGalleryShow(false)}>X</Modal.Header>
-        <Modal.Body>
-          <Carousel data-aos="fade-up" data-aos-offset="100" data-aos-delay="200" data-aos-duration="500">
-            {imgModal.map((item, index) => {
-              return (
-                <Carousel.Item style={{ backgroundColor: 'black' }} key={`slide${item + 1}`}>
-                  <img
-                    style={{ filter: 'opacity(0.7)', width: '50vw' }}
-                    className="d-block w-100"
-                    src={images_url + `gallery indcon/1 (${item}).jpeg`}
-                    alt="First slide"
-                  />
-                </Carousel.Item>
-              )
-            })}
-          </Carousel>
-        </Modal.Body>
-      </Modal> */}
+        <Modal size='lg' show={galleryShow} onHide={() => setGalleryShow(false)}>
+          <Modal.Header onClick={() => setGalleryShow(false)}>X</Modal.Header>
+          <Modal.Body className='p-0'>
+            <Carousel data-aos="fade-up" data-aos-offset="100" data-aos-delay="200" data-aos-duration="500">
+              {imgModal.map((itemid, index) => {
+                return (
+                  <Carousel.Item style={{ backgroundColor: 'black' }} key={index}>
+                    <div style={{ overflow: 'hidden', width: '100%', maxHeight: "593px" }}>
+                      <img
+                        style={{ filter: 'opacity(0.7)', width: '100%' }}
+                        className="d-block"
+                        src={`https://drive.google.com/uc?export=view&id=${itemid}`}
+                        alt="First slide"
+                      />
+                    </div>
+                  </Carousel.Item>
+                )
+              })}
+            </Carousel>
+          </Modal.Body>
+        </Modal>
         <HeadingComp head={'Gallery'} />
         <div className="row justify-content-center ms-1 me-1">
           <p>head</p>
           {
-            // console.log(listImg)
-            Object.keys(listImg).map(function(event) {
+            Object.keys(listImg).map(function (event, index) {
               const result = <p> <span>{event}</span> {listImg[event].map(imgID => (<p>{imgID}</p>))}</p>;
-              return result
-              
+              return (
+                <div key={index} className="col-lg-3 col-md-4 col-sm-6 mt-2">
+                  <img
+                    onClick={() => showImage(listImg[event])}
+                    style={{ width: '100%' }}
+                    className="d-block w-100"
+                    src={`https://drive.google.com/uc?export=view&id=${listImg[event][0]}`}
+                    alt="First slide"
+                  />
+                  <OverlayTrigger placement={'bottom'} overlay={<Tooltip id="tooltip-disabled">{event}</Tooltip>}>
+                    <span style={{ whiteSpace: "nowrap", display: "inline-block", width: '100%', overflow: 'hidden', textOverflow: "ellipsis" }} className="text-center p-2">{event}</span>
+                  </OverlayTrigger>
+                </div>
+              )
             }
             )
           }
-          {/* {[...Array(numImages).keys()].map((item, index) => (
-          <div key={index} className="col-lg-3 col-md-4 col-sm-6 mt-2">
-            <img
-              onClick={() => showImage(item + 1)}
-              style={{ width: '100%' }}
-              className="d-block w-100"
-              src={images_url + `gallery indcon/1 (${item + 1}).jpeg`}
-              alt="First slide"
-            />
-          </div>
-        ))} */}
+          
         </div>
-      </div> : <LoadSpinner />}
+      </div > : <LoadSpinner />
+      }
     </>
 
   )
