@@ -149,5 +149,5 @@ const rs_gdrive = [
     },
     
 ]
-
-export { team_indcon, images_url,rs_gdrive }
+const gallery_id = "13l6V9J2k4PdV6FNwjrpvSUZOEa5LCSPJ"
+export { team_indcon, images_url,rs_gdrive,gallery_id }
