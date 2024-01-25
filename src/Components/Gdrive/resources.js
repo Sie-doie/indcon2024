@@ -20,7 +20,7 @@ const Resources = () => {
     let res
     const uid = window.atob(id)
     const url =
-      "https://corsproxy.io/?" +
+      "https://api.allorigins.win/get?url=" +
       encodeURIComponent(
         `https://drive.google.com/embeddedfolderview?id=${uid}#list`,
       );
